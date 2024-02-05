@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello BookController!{% endblock %}
+
+{% block body %}
+    <form method="post">
+
+            <label for="inputUsername">title book</label>
+            <input type="text" name="title" id="inputUsername" class="form-control" >
+            <label for="inputPassword">Author</label>
+            <input type="text" name="author" id="inputPassword" class="form-control">
+        <p><select multiple size="3"  name="page[]">
+                <option disabled>Выберите героя</option>
+                <option value="Чебурашка">Чебурашка</option>
+                <option selected value="Крокодил Гена">Крокодил Гена</option>
+                <option value="Шапокляк">Шапокляк</option>
+                <option value="Крыса Лариса">Крыса Лариса</option>
+            </select></p>
+
+            <button class="btn btn-lg btn-primary" type="submit">
+                Search
+            </button>
+
+{% endblock %}

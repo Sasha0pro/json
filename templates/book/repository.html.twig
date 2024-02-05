@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello BookController!{% endblock %}
+
+{% block body %}
+
+
+    {% for book in books.result %}
+        {{ book.getId() }}<br>
+    {% endfor %}
+
+    {% include 'utils/pagination.html.twig' with { 'p':books} %}
+
+{% endblock %}
