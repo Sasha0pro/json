@@ -59,15 +59,11 @@ class BookController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()){
             $manager->persist($book->addUser($user));
             $manager->flush();
-
-            $this->addFlash('success','Create book');
-
-            return $this->redirectToRoute('app_main');
+            
+            return $this->json([],201);
         }
 
-        return $this->render('book/create.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->json([]);
     }
     #[Route('/book/{book_id}/content', name: 'content_book', methods: ['GET'])]
     public function content(#[MapEntity(expr: 'repository.find(book_id)')] Book $book): Response
