@@ -64,12 +64,11 @@ class BookRepository extends ServiceEntityRepository
                     ->setParameter('title', $title);
             }
 
-            if ($author != null) {
-                $qb->join('b.users', 'u', Join::WITH, 'u.username = :username')
-                    ->setParameter('username', $author);
+            if ($author !== null) {
+                $qb->join('b.users', 'u', Join::WITH, 'u.username = :username')->setParameter('username', $author);
             }
 
-            if ($title == null && $author == null) {
+            if ($title === null && $author === null) {
                 return null;
             }
 

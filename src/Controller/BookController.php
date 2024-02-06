@@ -23,6 +23,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 class BookController extends AbstractController
 {
+    public function __construct(private readonly Serializer $serializer){}
 
     /**
      * @throws ExceptionInterface
@@ -36,11 +37,7 @@ class BookController extends AbstractController
         $page = $request->get('page', 1);
         $books = $bookRepository->getByUser($page, $user)->getResult();
 
-        $normalizer = new ObjectNormalizer();
-        $encoder = new JsonEncoder();
-        $serializer = new Serializer([$normalizer], [$encoder]);
-
-        $normalizedData = $serializer->serialize($books, 'json', [AbstractNormalizer::ATTRIBUTES => ['title','users' => ['username']]]);
+        $normalizedData = $this->serializer->normalize($books, 'json', [AbstractNormalizer::ATTRIBUTES => ['title','users' => ['username']]]);
 
         return $this->json([
             'data' => $normalizedData
@@ -59,20 +56,20 @@ class BookController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()){
             $manager->persist($book->addUser($user));
             $manager->flush();
-            
-            return $this->json([],201);
+
+            return $this->json([], Response::HTTP_CREATED);
         }
 
         return $this->json([]);
     }
+
+    /**
+     * @throws ExceptionInterface
+     */
     #[Route('/book/{book_id}/content', name: 'content_book', methods: ['GET'])]
     public function content(#[MapEntity(expr: 'repository.find(book_id)')] Book $book): Response
     {
-        $normalizer = new ObjectNormalizer();
-        $encoder = new JsonEncoder();
-        $serializer = new Serializer([$normalizer], [$encoder]);
-
-        $normalizedData = $serializer->serialize($book, 'json', [AbstractNormalizer::ATTRIBUTES => ['title','users' => ['username']]]);
+        $normalizedData = $this->serializer->normalize($book, 'json', [AbstractNormalizer::ATTRIBUTES => ['title','users' => ['username']]]);
 
         return $this->json([
             'data' => $normalizedData
@@ -89,7 +86,7 @@ class BookController extends AbstractController
             $manager->persist($book);
             $manager->flush();
 
-            return $this->json([],201);
+            return $this->json([],Response::HTTP_CREATED);
         }
 
         return $this->json([]);
@@ -105,33 +102,31 @@ class BookController extends AbstractController
         return $this->json([]);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     #[Route('/book/repository', name: 'repository', methods: ['GET'])]
     public function repository(ManagerRegistry $managerRegistry, Request $request): Response
     {
         $page = $request->get('page', 1);
         $books = $managerRegistry->getRepository(Book::class)->findBookTwoAuthorAndN($page)->getResult();
 
-        $normalizer = new ObjectNormalizer();
-        $encoder = new JsonEncoder();
-        $serializer = new Serializer([$normalizer], [$encoder]);
-
-        $normalizedData = $serializer->serialize($books, 'json', [AbstractNormalizer::ATTRIBUTES => ['title','users' => ['username']]]);
+        $normalizedData = $this->serializer->normalize($books, 'json', [AbstractNormalizer::ATTRIBUTES => ['title','users' => ['username']]]);
 
         return $this->json([
             'data' => $normalizedData
         ]);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     #[Route('/authors', name: 'authors')]
     public function authors(UserRepository $userRepository): Response
     {
         $users = $userRepository->findAll();
 
-        $normalizer = new ObjectNormalizer();
-        $encoder = new JsonEncoder();
-        $serializer = new Serializer([$normalizer], [$encoder]);
-
-        $normalizedData = $serializer->serialize($users, 'json', [AbstractNormalizer::ATTRIBUTES => ['id','username']]);
+        $normalizedData = $this->serializer->normalize($users, 'json', [AbstractNormalizer::ATTRIBUTES => ['id','username']]);
 
         return $this->json([
             'data' => $normalizedData,
