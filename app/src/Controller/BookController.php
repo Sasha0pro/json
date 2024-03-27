@@ -18,6 +18,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class BookController extends AbstractController
 {
@@ -43,7 +44,7 @@ class BookController extends AbstractController
 
     }
     #[Route('/create', name: 'create_book', methods:['POST','GET'] )]
-    public function create(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
+    public function create(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, ValidatorInterface $validator): Response
     {
         $book = new Book();
 
@@ -51,7 +52,7 @@ class BookController extends AbstractController
         $content = $request->request->get('content');
         $usersId = $request->request->get('id');
 
-        if ($title !== null && $content !== null && $usersId !== null){
+        if ($title !== null && $content !== null && $usersId !== null) {
             $ids = json_decode($usersId);
 
             $users = $userRepository->findByIDs($ids);
@@ -64,9 +65,17 @@ class BookController extends AbstractController
             $entityManager->persist($book);
             $entityManager->flush();
 
-            return $this->json([],Response::HTTP_CREATED);
-        }
+            $errors = $validator->validate($book);
 
+            if (count($errors) > 0) {
+                return new Response($errors, true);
+            }
+            else {
+
+                return $this->json([], Response::HTTP_CREATED);
+
+            }
+        }
         return $this->json([], Response::HTTP_BAD_REQUEST);
     }
 
@@ -84,7 +93,7 @@ class BookController extends AbstractController
     }
 
     #[Route('/book/{book_id}/update', name: 'update_book', methods: ['POST','GET'])]
-    public function update(#[MapEntity(expr: 'repository.find(book_id)')] Book $book,Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager): Response
+    public function update(#[MapEntity(expr: 'repository.find(book_id)')] Book $book, Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager): Response
     {
         $title = $request->request->get('title');
         $content = $request->request->get('content');

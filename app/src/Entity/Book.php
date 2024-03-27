@@ -7,6 +7,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
 class Book
@@ -16,7 +19,8 @@ class Book
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 5)]
+    #[Assert\Length(min: 4, minMessage: 'error')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]

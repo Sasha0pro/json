@@ -428,6 +428,13 @@
         <argument type="service" id=".service_locator.jUv.zyj.App\Controller\BookController"/>
       </call>
     </service>
+    <service id="App\Controller\DtoController" class="App\Controller\DtoController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="container.service_subscriber"/>
+      <call method="setContainer">
+        <argument type="service" id=".service_locator.jUv.zyj.App\Controller\DtoController"/>
+      </call>
+    </service>
     <service id="App\Controller\MainController" class="App\Controller\MainController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <tag name="container.service_subscriber"/>
@@ -449,6 +456,16 @@
       <call method="setContainer">
         <argument type="service" id=".service_locator.jUv.zyj.App\Controller\SecurityController"/>
       </call>
+    </service>
+    <service id="App\DTO\TestRequestBodyDTO" class="App\DTO\TestRequestBodyDTO" autowire="true" autoconfigure="true"/>
+    <service id="App\EventListener\ControllerArgumentsListener" class="App\EventListener\ControllerArgumentsListener" autowire="true" autoconfigure="true">
+      <tag name="kernel.event_listener" event="Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent" method="onKernelControllerArguments" priority="0" dispatcher=""/>
+      <tag name="container.hot_path"/>
+      <argument type="service" id="debug.validator"/>
+      <argument type="service" id="debug.serializer"/>
+    </service>
+    <service id="App\EventListener\ExceptionListener" class="App\EventListener\ExceptionListener" autowire="true" autoconfigure="true">
+      <tag name="kernel.event_listener" event="Symfony\Component\HttpKernel\Event\ExceptionEvent" method="onKernelException" priority="0" dispatcher=""/>
     </service>
     <service id="App\Form\BookType" class="App\Form\BookType" autowire="true" autoconfigure="true">
       <tag name="form.type"/>
@@ -508,7 +525,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag priority="-50" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.c1ir_pg"/>
+      <argument type="service" id=".service_locator.s5EiPmd"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag priority="-100" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">controller.argument_value_resolver</tag>
@@ -2794,6 +2811,22 @@
       <argument type="service" id="monolog.logger.event" on-invalid="null"/>
       <argument type="service" id=".virtual_request_stack" on-invalid="null"/>
       <call method="addListener">
+        <argument>kernel.controller_arguments</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="App\EventListener\ControllerArgumentsListener"/>
+          <argument>onKernelControllerArguments</argument>
+        </argument>
+        <argument>0</argument>
+      </call>
+      <call method="addListener">
+        <argument>kernel.exception</argument>
+        <argument type="collection">
+          <argument type="service_closure" id="App\EventListener\ExceptionListener"/>
+          <argument>onKernelException</argument>
+        </argument>
+        <argument>0</argument>
+      </call>
+      <call method="addListener">
         <argument>kernel.controller</argument>
         <argument type="collection">
           <argument type="service_closure" id="data_collector.router"/>
@@ -3383,7 +3416,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.c1ir_pg"/>
+      <argument type="service" id=".service_locator.s5EiPmd"/>
     </service>
     <service id="debug.log_processor" class="Symfony\Bridge\Monolog\Processor\DebugProcessor">
       <tag name="kernel.reset" method="reset"/>
@@ -7097,6 +7130,9 @@
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\BookController" class="App\Controller\BookController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\BookController" class="App\Controller\BookController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\BookController" class="App\Controller\BookController" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\DtoController" class="App\Controller\DtoController" autowire="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\DtoController" class="App\Controller\DtoController" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Controller\DtoController" class="App\Controller\DtoController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\MainController" class="App\Controller\MainController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\MainController" class="App\Controller\MainController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\MainController" class="App\Controller\MainController" autowire="true" autoconfigure="true" abstract="true"/>
@@ -7106,6 +7142,10 @@
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.App\EventListener\ControllerArgumentsListener.0.App\EventListener\ControllerArgumentsListener" class="App\EventListener\ControllerArgumentsListener" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\EventListener\ControllerArgumentsListener" class="App\EventListener\ControllerArgumentsListener" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.App\EventListener\ExceptionListener.0.App\EventListener\ExceptionListener" class="App\EventListener\ExceptionListener" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\EventListener\ExceptionListener" class="App\EventListener\ExceptionListener" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Component\Form\FormTypeInterface.0.App\Form\BookType" class="App\Form\BookType" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Form\BookType" class="App\Form\BookType" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Component\Form\FormTypeInterface.0.App\Form\UserType" class="App\Form\UserType" autowire="true" abstract="true"/>
@@ -7506,11 +7546,12 @@
         <argument key="userRepository" type="service_closure" id="App\Repository\UserRepository"/>
       </argument>
     </service>
-    <service id=".service_locator.8IbU9zc" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.VPFL4ue" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
         <argument key="userRepository" type="service_closure" id="App\Repository\UserRepository"/>
+        <argument key="validator" type="service_closure" id="debug.validator"/>
       </argument>
     </service>
     <service id=".service_locator.KJSb96P" class="Symfony\Component\DependencyInjection\ServiceLocator">
@@ -7546,6 +7587,12 @@
         <argument key="userRepository" type="service_closure" id="App\Repository\UserRepository"/>
       </argument>
     </service>
+    <service id=".service_locator.PMbOvsA" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="requestBodyDTO" type="service_closure" id="App\DTO\TestRequestBodyDTO"/>
+      </argument>
+    </service>
     <service id=".service_locator.msKV3CX" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -7553,11 +7600,12 @@
         <argument key="serializer" type="service_closure" id="debug.serializer"/>
       </argument>
     </service>
-    <service id=".service_locator.ucT.erj" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.AEcFbHQ" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="managerRegistry" type="service_closure" id="doctrine"/>
         <argument key="passwordHasher" type="service_closure" id="security.user_password_hasher"/>
+        <argument key="requestBodyDTO" type="service_closure" id="App\DTO\TestRequestBodyDTO"/>
       </argument>
     </service>
     <service id=".service_locator.8vEmV44" class="Symfony\Component\DependencyInjection\ServiceLocator">
@@ -7575,18 +7623,19 @@
         <argument key="tokenService" type="service_closure" id="App\Service\AccessTokenService"/>
       </argument>
     </service>
-    <service id=".service_locator.c1ir_pg" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.s5EiPmd" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Controller\BookController::Books" type="service_closure" id=".service_locator.GA_2Iiq"/>
         <argument key="App\Controller\BookController::authors" type="service_closure" id=".service_locator.kPUOGb8"/>
         <argument key="App\Controller\BookController::content" type="service_closure" id=".service_locator.KJSb96P"/>
-        <argument key="App\Controller\BookController::create" type="service_closure" id=".service_locator.8IbU9zc"/>
+        <argument key="App\Controller\BookController::create" type="service_closure" id=".service_locator.VPFL4ue"/>
         <argument key="App\Controller\BookController::delete" type="service_closure" id=".service_locator.LG7ntvO"/>
         <argument key="App\Controller\BookController::repository" type="service_closure" id=".service_locator.uhMh3e6"/>
         <argument key="App\Controller\BookController::update" type="service_closure" id=".service_locator.rLdcVvq"/>
+        <argument key="App\Controller\DtoController::dto" type="service_closure" id=".service_locator.PMbOvsA"/>
         <argument key="App\Controller\MainController::main" type="service_closure" id=".service_locator.msKV3CX"/>
-        <argument key="App\Controller\RegistrationController::registration" type="service_closure" id=".service_locator.ucT.erj"/>
+        <argument key="App\Controller\RegistrationController::registration" type="service_closure" id=".service_locator.AEcFbHQ"/>
         <argument key="App\Controller\SecurityController::createRefreshToken" type="service_closure" id=".service_locator.xEnpNRs"/>
         <argument key="App\Controller\SecurityController::login" type="service_closure" id=".service_locator.8vEmV44"/>
         <argument key="App\Kernel::loadRoutes" type="service_closure" id=".service_locator.y4_Zrx."/>
@@ -7596,12 +7645,13 @@
         <argument key="App\Controller\BookController:Books" type="service_closure" id=".service_locator.GA_2Iiq"/>
         <argument key="App\Controller\BookController:authors" type="service_closure" id=".service_locator.kPUOGb8"/>
         <argument key="App\Controller\BookController:content" type="service_closure" id=".service_locator.KJSb96P"/>
-        <argument key="App\Controller\BookController:create" type="service_closure" id=".service_locator.8IbU9zc"/>
+        <argument key="App\Controller\BookController:create" type="service_closure" id=".service_locator.VPFL4ue"/>
         <argument key="App\Controller\BookController:delete" type="service_closure" id=".service_locator.LG7ntvO"/>
         <argument key="App\Controller\BookController:repository" type="service_closure" id=".service_locator.uhMh3e6"/>
         <argument key="App\Controller\BookController:update" type="service_closure" id=".service_locator.rLdcVvq"/>
+        <argument key="App\Controller\DtoController:dto" type="service_closure" id=".service_locator.PMbOvsA"/>
         <argument key="App\Controller\MainController:main" type="service_closure" id=".service_locator.msKV3CX"/>
-        <argument key="App\Controller\RegistrationController:registration" type="service_closure" id=".service_locator.ucT.erj"/>
+        <argument key="App\Controller\RegistrationController:registration" type="service_closure" id=".service_locator.AEcFbHQ"/>
         <argument key="App\Controller\SecurityController:createRefreshToken" type="service_closure" id=".service_locator.xEnpNRs"/>
         <argument key="App\Controller\SecurityController:login" type="service_closure" id=".service_locator.8vEmV44"/>
         <argument key="kernel:loadRoutes" type="service_closure" id=".service_locator.y4_Zrx."/>
@@ -8219,6 +8269,12 @@
     <service id=".service_locator.jUv.zyj.App\Controller\BookController" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\BookController"/>
       <argument>App\Controller\BookController</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.jUv.zyj" method="withContext"/>
+    </service>
+    <service id=".service_locator.jUv.zyj.App\Controller\DtoController" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\DtoController"/>
+      <argument>App\Controller\DtoController</argument>
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.jUv.zyj" method="withContext"/>
     </service>
@@ -9603,6 +9659,7 @@
         <argument key="Symfony\UX\StimulusBundle\Twig\UxControllersTwigRuntime" type="service_closure" id="stimulus.ux_controllers_twig_runtime"/>
       </argument>
     </service>
+    <service id="App\DTO\DtoInterface" alias="App\DTO\TestRequestBodyDTO"/>
     <service id="App\Kernel" alias="kernel" public="true"/>
     <service id="Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface" alias="parameter_bag"/>
     <service id="Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface" alias="parameter_bag"/>
@@ -9738,7 +9795,7 @@
     <service id="Psr\Log\LoggerInterface" alias="monolog.logger"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.bJ.4HC5" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.c1ir_pg"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.s5EiPmd"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.KLVvNIq"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id="Psr\Log\LoggerInterface $requestLogger" alias="monolog.logger.request"/>
@@ -9782,14 +9839,15 @@
     <service id="security.event_dispatcher.main" alias="debug.security.event_dispatcher.main"/>
     <service id=".service_locator.gFlme_s" alias=".service_locator.y4_Zrx."/>
     <service id=".service_locator.L4XifOv" alias=".service_locator.GA_2Iiq"/>
-    <service id=".service_locator.SPFAmCQ" alias=".service_locator.8IbU9zc"/>
+    <service id=".service_locator.UDQpDkU" alias=".service_locator.VPFL4ue"/>
     <service id=".service_locator.aJJuCxS" alias=".service_locator.KJSb96P"/>
     <service id=".service_locator.uI4Ivcn" alias=".service_locator.rLdcVvq"/>
     <service id=".service_locator.XOwqkJD" alias=".service_locator.LG7ntvO"/>
     <service id=".service_locator.ekBl.qm" alias=".service_locator.uhMh3e6"/>
     <service id=".service_locator.025Wi8b" alias=".service_locator.kPUOGb8"/>
+    <service id=".service_locator.u1lcrI." alias=".service_locator.PMbOvsA"/>
     <service id=".service_locator.fot_oVu" alias=".service_locator.msKV3CX"/>
-    <service id=".service_locator.Rxz9XSF" alias=".service_locator.ucT.erj"/>
+    <service id=".service_locator.naVvcIf" alias=".service_locator.AEcFbHQ"/>
     <service id=".service_locator.H1tDWY8" alias=".service_locator.8vEmV44"/>
     <service id=".service_locator.AVHeLHR" alias=".service_locator.xEnpNRs"/>
     <service id=".service_locator.Q1z.f9O" alias=".service_locator.jUv.zyj"/>
