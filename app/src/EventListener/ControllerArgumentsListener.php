@@ -9,15 +9,15 @@ use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use ReflectionClass;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 readonly class ControllerArgumentsListener
 {
     public function __construct
     (
         private ValidatorInterface $validator,
-        private DenormalizerInterface $denormalizer
     ){}
 
     /**
@@ -43,9 +43,9 @@ readonly class ControllerArgumentsListener
     {
         $class = null;
 
-        foreach ($arguments as $property) {
-            if ($property instanceof DtoInterface) {
-                $class = $property;
+        foreach ($arguments as $argument) {
+            if ($argument instanceof DtoInterface) {
+                $class = $argument;
             }
         }
         return $class;
@@ -66,9 +66,12 @@ readonly class ControllerArgumentsListener
      */
     public function deserializeAndSave(Request $request, DtoInterface $class): void
     {
-       $denormalizeClass =  $this->denormalizer->denormalize($request->request->all(), $class::class);
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, []);
 
-       $reflectionDenormalizeClass = new ReflectionClass($denormalizeClass);
+        $denormalizeClass =$serializer->denormalize($request->request->all(),$class::class);
+
+        $reflectionDenormalizeClass = new ReflectionClass($denormalizeClass);
 
         $reflection = new ReflectionClass($class);
 
