@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 
 readonly class ControllerArgumentsListener
 {
@@ -66,7 +67,7 @@ readonly class ControllerArgumentsListener
      */
     public function deserializeAndSave(Request $request, DtoInterface $class): void
     {
-        $normalizers = [new ObjectNormalizer()];
+        $normalizers = [new PropertyNormalizer()];
         $serializer = new Serializer($normalizers, []);
 
         $denormalizeClass =$serializer->denormalize($request->request->all(),$class::class);
@@ -79,7 +80,8 @@ readonly class ControllerArgumentsListener
 
         foreach ($properties as $property) {
             $nameProperty = $property->getName();
-            $property->setValue($class, $reflectionDenormalizeClass->getProperty($nameProperty)->getValue($class));
+
+            $property->setValue($class, $reflectionDenormalizeClass->getProperty($nameProperty)->getValue($denormalizeClass));
         }
     }
 

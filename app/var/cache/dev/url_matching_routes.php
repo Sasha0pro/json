@@ -18,7 +18,6 @@ return [
         '/create' => [[['_route' => 'create_book', '_controller' => 'App\\Controller\\BookController::create'], null, ['POST' => 0, 'GET' => 1], null, false, false, null]],
         '/book/repository' => [[['_route' => 'repository', '_controller' => 'App\\Controller\\BookController::repository'], null, ['GET' => 0], null, false, false, null]],
         '/authors' => [[['_route' => 'authors', '_controller' => 'App\\Controller\\BookController::authors'], null, null, null, false, false, null]],
-        '/dto' => [[['_route' => 'app_dto', '_controller' => 'App\\Controller\\DtoController::dto'], null, null, null, false, false, null]],
         '/main' => [[['_route' => 'app_main', '_controller' => 'App\\Controller\\MainController::main'], null, ['GET' => 0], null, false, false, null]],
         '/registration' => [[['_route' => 'app_registration', '_controller' => 'App\\Controller\\RegistrationController::registration'], null, ['POST' => 0], null, false, false, null]],
         '/' => [[['_route' => 'app_login', '_controller' => 'App\\Controller\\SecurityController::login'], null, null, null, false, false, null]],

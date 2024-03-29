@@ -9,9 +9,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  **/
  class TestRequestBodyDTO implements DtoInterface
 {
-    #[Assert\Length(min: 4, minMessage: 'error')]
-    private string $username;
-    private string $password;
+    private ?string $username = null;
+    private ?string $password = null;
 
     public function getUsername(): string
     {
