@@ -16,7 +16,10 @@ services:
       context: ./docker/php-fpm
     volumes:
       - ./app:/symfony
+      - ./docker/php-fpm/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     container_name: jsonBook-php-fpm
+    environment:
+      PHP_IDE_CONFIG: "serverName=Docker"
     depends_on:
       - mysql
 

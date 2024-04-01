@@ -37,7 +37,6 @@ export default {
               'Authorization': localStorage.getItem('accessToken')
             }
           })
-          window.location.href = "/main"
     }
   }
 }

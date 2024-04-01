@@ -6,83 +6,69 @@ use App\DTO\DtoInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
-use ReflectionClass;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Exception\PartialDenormalizationException;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
-readonly class ControllerArgumentsListener
+ class ControllerArgumentsListener
 {
+     private ?object $class = null;
+
     public function __construct
     (
-        private ValidatorInterface $validator,
+        private readonly ValidatorInterface $validator,
+        private readonly SerializerInterface $serializer,
     ){}
 
-    /**
-     * @throws \ReflectionException
-     * @throws ExceptionInterface
-     */
-    #[AsEventListener(event: ControllerArgumentsEvent::class)]
+     #[AsEventListener(event: ControllerArgumentsEvent::class)]
     public function onKernelControllerArguments(ControllerArgumentsEvent $event): void
     {
-        $class = $this->defineClass($event->getArguments());
+        $arguments = $event->getArguments();
+        $this->defineClass($arguments);
 
-        if ($class !== null) {
+        if ($this->class !== null) {
             $request = $event->getRequest();
-
-            $this->deserializeAndSave($request, $class);
-
-            $this->validate($class);
-
+            $this->denormalizeAndValidate($request);
         }
     }
 
-    public function defineClass($arguments): ?DtoInterface
+    public function defineClass($arguments): void
     {
-        $class = null;
-
         foreach ($arguments as $argument) {
             if ($argument instanceof DtoInterface) {
-                $class = $argument;
+                $this->class = $argument;
+
+                break;
             }
         }
-        return $class;
     }
 
-    public function validate(DtoInterface $class): void
+    public function denormalizeAndValidate(Request $request): void
     {
-        $errors = $this->validator->validate($class);
+        $violations = new ConstraintViolationList();
+        try {
+            $this->serializer->denormalize($request->request->all(), $this->class::class,'array',
+                [AbstractNormalizer::OBJECT_TO_POPULATE => $this->class,DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true]);
+        } catch (PartialDenormalizationException $e) {
+            foreach ($e->getErrors() as $exception) {
+                $message = sprintf('The type must be one of "%s" ("%s" given).', implode(', ', $exception->getExpectedTypes()), $exception->getCurrentType());
+                $parameters = [];
+                if ($exception->canUseMessageForUser()) {
+                    $parameters['hint'] = $exception->getMessage();
+                }
+                $violations->add(new ConstraintViolation($message, '', $parameters, null, $exception->getPath(), null));
+            }
+        }
+        $error = $this->validator->validate($this->class);
+        $violations->addAll($error);
 
-        if (count($errors) > 0) {
-            throw new BadRequestHttpException((string) $errors);
+        if ($violations->count() !== 0){
+            throw new ValidationFailedException(null, $violations);
         }
     }
-
-    /**
-     * @throws ExceptionInterface
-     * @throws \ReflectionException
-     */
-    public function deserializeAndSave(Request $request, DtoInterface $class): void
-    {
-        $normalizers = [new PropertyNormalizer()];
-        $serializer = new Serializer($normalizers, []);
-
-        $denormalizeClass =$serializer->denormalize($request->request->all(),$class::class);
-
-        $reflectionDenormalizeClass = new ReflectionClass($denormalizeClass);
-
-        $reflection = new ReflectionClass($class);
-
-        $properties = $reflection->getProperties();
-
-        foreach ($properties as $property) {
-            $nameProperty = $property->getName();
-
-            $property->setValue($class, $reflectionDenormalizeClass->getProperty($nameProperty)->getValue($denormalizeClass));
-        }
-    }
-
 }

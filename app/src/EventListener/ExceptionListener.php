@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 
 #[AsEventListener(event: ExceptionEvent::class, method: 'onKernelException' )]
@@ -28,9 +29,7 @@ class ExceptionListener
 //      else if ($exception instanceof InvalidArgumentException) {
 //            dd($exception);
 //        }
-
         $response->setContent($this->exceptionToJson($exception));
-
 
         $event->setResponse($response);
     }

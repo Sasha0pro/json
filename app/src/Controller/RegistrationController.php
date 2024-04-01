@@ -13,10 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationController extends AbstractController
 {
-    #[Route('/registration', name: 'app_registration',methods: ['POST'])]
+    #[Route('/registration', name: 'app_registration',methods: ['POST','GET'])]
     public function registration(Request $request, ManagerRegistry $managerRegistry,UserPasswordHasherInterface $passwordHasher, TestRequestBodyDTO $requestBodyDTO): Response
     {
-        dd($requestBodyDTO);
         $user = new User();
         $username = $request->request->get('username');
         $password = $request->request->get('password');

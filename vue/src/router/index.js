@@ -6,6 +6,7 @@ import main from '@/components/main.vue'
 import content from '@/components/content.vue'
 import create from '@/components/create.vue'
 import update from "@/components/update.vue";
+import array from "@/components/array.vue"
 
 export default createRouter({
     history: createWebHistory(),
@@ -36,6 +37,10 @@ export default createRouter({
         {
             path: '/book/:id(\\d+)/update',
             component: update
+        },
+        {
+            path: '/array',
+            component: array
         }
     ]
 })

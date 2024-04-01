@@ -1,4 +1,5 @@
 <template>
+  <profile class="profile"></profile>
   <router-link to="/books">my books</router-link>
   <form>
     <input type="text" v-model="author" placeholder="author">
@@ -35,7 +36,12 @@
 
 <script>
 import axios from "axios";
+import profile from "@/components/profile.vue";
 export default {
+  components: {
+    profile
+  },
+
   data() {
     return {
       json: axios.get(`http://127.0.0.1:8000/main`)
@@ -80,6 +86,9 @@ export default {
 </script>
 
 <style scoped>
+.profile {
+  float: right;
+}
 .card {
 float: left;
   margin-left: 100px;

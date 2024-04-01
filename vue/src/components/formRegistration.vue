@@ -63,7 +63,7 @@ export default {
   },
   methods: {
     getUser() {
-       axios.post('http://127.0.0.1:8000/registration', {
+       axios.post('http://127.0.0.1:8084/registration', {
             username: this.username,
             password: this.password
           }, {

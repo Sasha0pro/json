@@ -3,15 +3,16 @@
 namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
-
+use App\Validator as AcmeAssert;
 /**
  *  @RequestBody
  **/
  class TestRequestBodyDTO implements DtoInterface
 {
-    private ?string $username = null;
-    private ?string $password = null;
-
+    #[Assert\Length(max: 2)]
+    private string $username;
+     #[Assert\Length(max: 2)]
+    private string $password;
     public function getUsername(): string
     {
         return $this->username;
